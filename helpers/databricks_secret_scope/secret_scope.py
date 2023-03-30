@@ -292,11 +292,11 @@ delete_secret_scope(databricks_instance, databricks_pat, new_scope_name)
 
 # DBTITLE 1,Copy Secret Scope Setup in Previous Step Into a New Secret Scope(s) in a Different Workspace
 # if 'new_scope_name' is 'None' then it will process all workspace secret scopes in previous step
-new_scope_name = "raqo"
-print("Copy Secret Scope Setup in Previous Step Into a New Secret Scope in a Different Workspace\n")
-recreate_all_secret_scopes(databricks_migration_instance, databricks_migration_pat, instructions, write_scope_user = "robert.altmiller@databricks.com", write_scope_user_perms = "Write", new_secret_scope_name = new_scope_name)
-instructions_diff_ws = get_secret_scope_report(databricks_migration_instance, databricks_migration_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "Write", secret_scope_name = new_scope_name)
-print(instructions_diff_ws)
+# new_scope_name = "raqo"
+# print("Copy Secret Scope Setup in Previous Step Into a New Secret Scope in a Different Workspace\n")
+# recreate_all_secret_scopes(databricks_migration_instance, databricks_migration_pat, instructions, write_scope_user = "robert.altmiller@databricks.com", write_scope_user_perms = "Write", new_secret_scope_name = new_scope_name)
+# instructions_diff_ws = get_secret_scope_report(databricks_migration_instance, databricks_migration_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "Write", secret_scope_name = new_scope_name)
+# print(instructions_diff_ws)
 
 # COMMAND ----------
 

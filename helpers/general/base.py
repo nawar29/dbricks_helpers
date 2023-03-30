@@ -1,3 +1,12 @@
+# library and file imports
+# MAGIC %run "./config"
+
+# environment variables initialization
+from config import *
+config = Config()
+config.print_config_vars()
+config = config.get_config_vars()
+
 # Databricks notebook source
 # DBTITLE 1,Import Generic Functions
 # MAGIC %run "./general_functions"
@@ -6,19 +15,19 @@
 
 # DBTITLE 1,Environment Variables
 # databricks instance address
-databricks_instance = "********"
+databricks_instance = "AAAAA"
 print(f"databricks_instance: {databricks_instance}")
 
 # databricks personal access token
-databricks_pat = "dapi*****"
+databricks_pat = config["DATABRICKS_PAT"]
 print(f"databricks_pat: {databricks_pat}")
 
 # databricks migration instance address
-databricks_migration_instance = "*****"
+databricks_migration_instance = config["DATABRICKS_MIGRATION_INSTANCE"]
 print(f"databricks_migration_instance: {databricks_migration_instance}")
 
 # databricks migration personal access token
-databricks_migration_pat = "dapi*****"
+databricks_migration_pat = config["DATABRICKS_MIGRATION_PAT"]
 print(f"databricks_migration_pat: {databricks_migration_pat}")
 
 # COMMAND ----------

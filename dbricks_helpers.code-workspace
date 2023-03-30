@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "Databricks - Workspace",
+			"uri": "wsfs:/"
+		}
+	],
+	"settings": {}
+}
