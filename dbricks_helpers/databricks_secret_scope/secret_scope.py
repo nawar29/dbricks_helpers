@@ -282,7 +282,7 @@ print(instructions)
 # COMMAND ----------
 
 # DBTITLE 1,Copy Secret Scope Setup in Previous Step Into a New Secret Scope(s) in the Same Workspace
-if 'new_scope_name' is 'None' then it will process all workspace secret scopes in previous step
+if 'new_scope_name' is 'None' # then it will process all workspace secret scopes in previous step
 new_scope_name = "raqo"
 print("Copy Secret Scope Setup in Previous Step Into a New Secret Scope in the Same Workspace\n")
 recreate_all_secret_scopes(databricks_instance, databricks_pat, instructions, new_secret_scope_name = new_scope_name)
