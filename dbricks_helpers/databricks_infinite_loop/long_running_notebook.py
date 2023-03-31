@@ -1,5 +1,6 @@
 # Databricks notebook source
-import string, random
+
+from general.base import *
 
 # COMMAND ----------
 

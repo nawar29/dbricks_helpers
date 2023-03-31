@@ -2,6 +2,8 @@
 # DBTITLE 1,Get Databricks Rest 2.0 Initial Configuration and Base Functions
 # MAGIC %run "../general/base"
 
+from general.base import *
+
 # COMMAND ----------
 
 # DBTITLE 1,Databricks Rest API 2.0 - Create Secret Scope
@@ -202,7 +204,7 @@ def get_secret_scope_report(dbricks_instance = None, dbricks_pat = None, read_sc
     if secret_names != None:
       secret_vals = {}
       for secret_name in secret_names:
-        secret_value = ' '.join([x for x in dbutils.secrets.get(scope = secret_scope, key = secret_name)])
+        secret_value = ''.join([x for x in dbutils.secrets.get(scope = secret_scope, key = secret_name)])
         secret_vals.update({secret_name: secret_value})
       SS_REPORT_ITEMS["secret_scope_secrets"] = secret_vals
     else: SS_REPORT_ITEMS["secret_scope_secrets"] = secret_names
@@ -273,14 +275,14 @@ def recreate_all_secret_scopes(dbricks_instance = None, dbricks_pat = None, inst
 # COMMAND ----------
 
 # DBTITLE 1,Read Individual Secret Scope in Workspace
-# if 'secret_scope_name' is 'None' then it will process all workspace secret scopes
+if 'secret_scope_name' is 'None' # then it will process all workspace secret scopes
 instructions = get_secret_scope_report(databricks_instance, databricks_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "READ", secret_scope_name = "raqo")
 print(instructions)
 
 # COMMAND ----------
 
 # DBTITLE 1,Copy Secret Scope Setup in Previous Step Into a New Secret Scope(s) in the Same Workspace
-# if 'new_scope_name' is 'None' then it will process all workspace secret scopes in previous step
+if 'new_scope_name' is 'None' then it will process all workspace secret scopes in previous step
 new_scope_name = "raqo"
 print("Copy Secret Scope Setup in Previous Step Into a New Secret Scope in the Same Workspace\n")
 recreate_all_secret_scopes(databricks_instance, databricks_pat, instructions, new_secret_scope_name = new_scope_name)
@@ -292,25 +294,25 @@ delete_secret_scope(databricks_instance, databricks_pat, new_scope_name)
 
 # DBTITLE 1,Copy Secret Scope Setup in Previous Step Into a New Secret Scope(s) in a Different Workspace
 # if 'new_scope_name' is 'None' then it will process all workspace secret scopes in previous step
-# new_scope_name = "raqo"
-# print("Copy Secret Scope Setup in Previous Step Into a New Secret Scope in a Different Workspace\n")
-# recreate_all_secret_scopes(databricks_migration_instance, databricks_migration_pat, instructions, write_scope_user = "robert.altmiller@databricks.com", write_scope_user_perms = "Write", new_secret_scope_name = new_scope_name)
-# instructions_diff_ws = get_secret_scope_report(databricks_migration_instance, databricks_migration_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "Write", secret_scope_name = new_scope_name)
-# print(instructions_diff_ws)
+new_scope_name = "raqo"
+print("Copy Secret Scope Setup in Previous Step Into a New Secret Scope in a Different Workspace\n")
+recreate_all_secret_scopes(databricks_migration_instance, databricks_migration_pat, instructions, write_scope_user = "robert.altmiller@databricks.com", write_scope_user_perms = "Write", new_secret_scope_name = new_scope_name)
+instructions_diff_ws = get_secret_scope_report(databricks_migration_instance, databricks_migration_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "Write", secret_scope_name = new_scope_name)
+print(instructions_diff_ws)
 
 # COMMAND ----------
 
-# response = add_secret_scope_acl(databricks_migration_instance, databricks_migration_pat, dbricks_scope_name, "robert.altmiller@databricks.com", "MANAGE")
-# print(f"response: {response}; response_text: {response.text}")
+response = add_secret_scope_acl(databricks_migration_instance, databricks_migration_pat, dbricks_scope_name, "robert.altmiller@databricks.com", "MANAGE")
+print(f"response: {response}; response_text: {response.text}")
 
-# secret_scope_acls = list_secret_scope_acls(databricks_migration_instance, databricks_migration_pat, "raqo")
-# print(f"secret_scope_acls: {secret_scope_acls}")
+secret_scope_acls = list_secret_scope_acls(databricks_migration_instance, databricks_migration_pat, "raqo")
+print(f"secret_scope_acls: {secret_scope_acls}")
 
-# response = put_secret_in_secret_scope(databricks_migration_instance, databricks_migration_pat, "raqo", "abc", "def")
-# print(f"response: {response}; response_text: {response.text}")
+response = put_secret_in_secret_scope(databricks_migration_instance, databricks_migration_pat, "raqo", "abc", "def")
+print(f"response: {response}; response_text: {response.text}")
 
-# secrets = list_all_secret_scopes_secrets(databricks_migration_instance, databricks_migration_pat, "raqo")
-# print(f"secret_scopes_secrets: {secrets}")
+secrets = list_all_secret_scopes_secrets(databricks_migration_instance, databricks_migration_pat, "raqo")
+print(f"secret_scopes_secrets: {secrets}")
 
 # COMMAND ----------
 

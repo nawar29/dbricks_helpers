@@ -1,6 +1,7 @@
 # Databricks notebook source
 # DBTITLE 1,Library Imports
-import requests, os
+
+from general.base import *
 
 # COMMAND ----------
 
