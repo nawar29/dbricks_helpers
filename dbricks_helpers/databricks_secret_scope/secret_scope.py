@@ -2,8 +2,6 @@
 # DBTITLE 1,Get Databricks Rest 2.0 Initial Configuration and Base Functions
 # MAGIC %run "../general/base"
 
-from general.base import *
-
 # COMMAND ----------
 
 # DBTITLE 1,Databricks Rest API 2.0 - Create Secret Scope
@@ -47,8 +45,8 @@ def list_all_secret_scopes(dbricks_instance = None, dbricks_pat = None):
   except: return None
 
 
-# scopes = list_all_secret_scopes(databricks_instance, databricks_pat)
-# print(f"total_secret_scopes: {len(scopes)}; secret_scopes: {scopes}")
+scopes = list_all_secret_scopes(databricks_instance, databricks_pat)
+print(f"total_secret_scopes: {len(scopes)}; secret_scopes: {scopes}")
 
 # COMMAND ----------
 
@@ -204,7 +202,7 @@ def get_secret_scope_report(dbricks_instance = None, dbricks_pat = None, read_sc
     if secret_names != None:
       secret_vals = {}
       for secret_name in secret_names:
-        secret_value = ''.join([x for x in dbutils.secrets.get(scope = secret_scope, key = secret_name)])
+        secret_value = ' '.join([x for x in dbutils.secrets.get(scope = secret_scope, key = secret_name)])
         secret_vals.update({secret_name: secret_value})
       SS_REPORT_ITEMS["secret_scope_secrets"] = secret_vals
     else: SS_REPORT_ITEMS["secret_scope_secrets"] = secret_names
@@ -275,30 +273,62 @@ def recreate_all_secret_scopes(dbricks_instance = None, dbricks_pat = None, inst
 # COMMAND ----------
 
 # DBTITLE 1,Read Individual Secret Scope in Workspace
-if 'secret_scope_name' is 'None' # then it will process all workspace secret scopes
-instructions = get_secret_scope_report(databricks_instance, databricks_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "READ", secret_scope_name = "raqo")
+# if 'secret_scope_name' is 'None' then it will process all workspace secret scopes
+instructions = get_secret_scope_report(databricks_instance, databricks_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "READ", secret_scope_name = None)
 print(instructions)
 
 # COMMAND ----------
 
+# DBTITLE 1,Write Secret Scope Information to DBFS and Azure Storage Account (External)
+
+# write secret scope results to DBFS
+schema_secretscope = StructType(
+  [
+    StructField('payload', StringType(), True)
+  ]
+)
+df_secret_scope = spark.createDataFrame(data = [[instructions]], schema = schema_secretscope)
+dbfsfilepath = f"{azsa_folderpath}/{azsa_filename}"
+# clean up old dbfs secret scope results
+dbutils.fs.rm(dbfsfilepath, True)
+df_secret_scope.coalesce(1).write.mode("overwrite").format('json').save(dbfsfilepath)
+
+
+# write secret scopes to azure storage account
+storage_account_obj.upload_blob_from_local(
+  storageacctname = storage_account_obj.config["AZURE_STORAGE_ACCOUNT_NAME"], 
+  container = "secret-scopes",
+  localfilepath = f'/dbfs/{dbfsfilepath}/{get_dbfs_file_name(dbfsfilepath, ".json")}', 
+  blobfilepath = dbfs_filepath, 
+  overwrite = True
+)
+
+# finally remove new dbfs secret scope results
+dbutils.fs.rm(dbfsfilepath, True)
+
+# COMMAND ----------
+
 # DBTITLE 1,Copy Secret Scope Setup in Previous Step Into a New Secret Scope(s) in the Same Workspace
-if 'new_scope_name' is 'None' # then it will process all workspace secret scopes in previous step
-new_scope_name = "raqo"
+# if 'new_scope_name' is 'None' then it will process all workspace secret scopes in previous step
+
+new_scope_name = "arun-wagle-secrets-scope"
 print("Copy Secret Scope Setup in Previous Step Into a New Secret Scope in the Same Workspace\n")
 recreate_all_secret_scopes(databricks_instance, databricks_pat, instructions, new_secret_scope_name = new_scope_name)
-instructions_same_ws = get_secret_scope_report(databricks_instance, databricks_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "READ", secret_scope_name = new_scope_name)
-print(instructions_same_ws)
-delete_secret_scope(databricks_instance, databricks_pat, new_scope_name)
+# instructions_same_ws = get_secret_scope_report(databricks_instance, databricks_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "READ", secret_scope_name = new_scope_name)
+# print(instructions_same_ws)
+# delete_secret_scope(databricks_instance, databricks_pat, new_scope_name)
 
 # COMMAND ----------
 
 # DBTITLE 1,Copy Secret Scope Setup in Previous Step Into a New Secret Scope(s) in a Different Workspace
 # if 'new_scope_name' is 'None' then it will process all workspace secret scopes in previous step
+
 new_scope_name = "raqo"
 print("Copy Secret Scope Setup in Previous Step Into a New Secret Scope in a Different Workspace\n")
 recreate_all_secret_scopes(databricks_migration_instance, databricks_migration_pat, instructions, write_scope_user = "robert.altmiller@databricks.com", write_scope_user_perms = "Write", new_secret_scope_name = new_scope_name)
-instructions_diff_ws = get_secret_scope_report(databricks_migration_instance, databricks_migration_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "Write", secret_scope_name = new_scope_name)
-print(instructions_diff_ws)
+delete_secret_scope(databricks_migration_instance, databricks_migration_pat, new_scope_name)
+#nstructions_diff_ws = get_secret_scope_report(databricks_migration_instance, databricks_migration_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "Write", secret_scope_name = new_scope_name)
+#print(instructions_diff_ws)
 
 # COMMAND ----------
 
@@ -313,7 +343,3 @@ print(f"response: {response}; response_text: {response.text}")
 
 secrets = list_all_secret_scopes_secrets(databricks_migration_instance, databricks_migration_pat, "raqo")
 print(f"secret_scopes_secrets: {secrets}")
-
-# COMMAND ----------
-
-

@@ -1,41 +1,6 @@
-# COMMAND ----------
-
 # Databricks notebook source
 # DBTITLE 1,Environment Variables Initialization
-# MAGIC %run "./config"
-
-# Databricks notebook source
-# DBTITLE 1,Import Generic Functions
-# MAGIC %run "./general_functions"
-
-
-# COMMAND ----------
-
-# DBTITLE 1, Initial Configuration
-# databricks instance address
-
-config = Config()
-config = config.get_config_vars()
-
-
-# COMMAND ----------
-
-# DBTITLE 1,Environment Variables
-# databricks instance address
-databricks_instance = config["DATABRICKS_INSTANCE"]
-print(f"databricks_instance: {databricks_instance}")
-
-# databricks personal access token
-databricks_pat = config["DATABRICKS_PAT"]
-print(f"databricks_pat: {databricks_pat}")
-
-# databricks migration instance address
-databricks_migration_instance = config["DATABRICKS_MIGRATION_INSTANCE"]
-print(f"databricks_migration_instance: {databricks_migration_instance}")
-
-# databricks migration personal access token
-databricks_migration_pat = config["DATABRICKS_MIGRATION_PAT"]
-print(f"databricks_migration_pat: {databricks_migration_pat}")
+# MAGIC  %run "./config"
 
 # COMMAND ----------
 
@@ -65,9 +30,10 @@ def get_request(url = None, headers = None, params = None, data = None):
         return requests.get(url, params = params, headers = headers, json = data)
     else: return requests.get(url, headers = headers, json = data)
 
+
 # COMMAND ----------
 
-# DBTITLE 1,Databricks Groups Configuration
+# DBTITLE 1,Databricks Rest API 2.0 Configuration
 def get_api_config(dbricks_instance = None, api_topic = None, api_call_type = None, dbricks_pat = None):
     config = {
         # databricks workspace instance
@@ -87,7 +53,6 @@ def get_api_config(dbricks_instance = None, api_topic = None, api_call_type = No
 # COMMAND ----------
 
 # DBTITLE 1,Execute Databricks Rest API 2.0 Call (Generic)
-# execute rest api call
 # call_type variable is 'get' or 'post'
 def execute_rest_api_call(function_call_type, config = None, token = None, jsondata = None):
     headers = get_headers(token)

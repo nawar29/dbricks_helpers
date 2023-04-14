@@ -2,7 +2,6 @@
 # DBTITLE 1,Get Databricks Rest 2.0 Initial Configuration and Base Functions
 # MAGIC %run "../general/base"
 
-
 # COMMAND ----------
 
 # MAGIC %run "../databricks_secret_scope/secret_scope"
