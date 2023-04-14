@@ -3,7 +3,8 @@
 import os
 
 # environment
-os.environ["environment"] = "dev"
+os.environ["ENVIRONMENT"] = "dev"
+os.environ["LOCAL_DATA_FOLDER"] = "data"
 
 # databricks environment variables
 os.environ["DATABRICKS_INSTANCE"] = "e2-demo-field-eng.cloud.databricks.com"
@@ -12,7 +13,7 @@ os.environ["DATABRICKS_MIGRATION_INSTANCE"] = "adb-7331524806598396.16.azuredata
 os.environ["DATABRICKS_MIGRATION_PAT"] = "dapi268b99fffeb917c8e5d6201551f38a4e-3"
 
 # azure environment variables - storage account
-os.environ["AZURE_STORAGE_ACCOUNT_NAME"] = f'rastorageaccount{os.environ["environment"]}'
+os.environ["AZURE_STORAGE_ACCOUNT_NAME"] = f'rastorageaccount{os.environ["ENVIRONMENT"]}'
 os.environ["AZURE_STORAGE_ACCOUNT_CONTAINER"] = "bronze"
 os.environ["AZURE_STORAGE_ACCOUNT_FOLDER_PATH"] = f'databricks/{os.environ["DATABRICKS_INSTANCE"]}/secret_scopes'
 os.environ["AZURE_STORAGE_ACCOUNT_FILE_NAME"] = "secret_scopes.json"

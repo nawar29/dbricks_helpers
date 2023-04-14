@@ -25,7 +25,9 @@ class Config:
     # class constructor    
     def __init__(self):
 
-        # local variables
+        # variables
+        self.ENVIRONMENT = str(os.getenv('ENVIRONMENT'))
+        self.LOCAL_DATA_FOLDER = str(os.getenv('LOCAL_DATA_FOLDER'))
         self.DATABRICKS_INSTANCE = str(os.getenv('DATABRICKS_INSTANCE'))
         self.DATABRICKS_PAT = str(os.getenv('DATABRICKS_PAT'))
         self.DATABRICKS_MIGRATION_INSTANCE = str(os.getenv('DATABRICKS_MIGRATION_INSTANCE'))

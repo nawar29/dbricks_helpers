@@ -62,7 +62,7 @@ def get_dbfs_file_name(dbfsfilepath = None, file_ext = None):
 
 # COMMAND ----------
 
-# DBTITLE 1,Remove Invalid Characters
+# DBTITLE 1,Remove Invalid Characters From a String Input
 def remove_invalid_chars(
         inputstr = None, 
         lowercase = False,
@@ -85,3 +85,12 @@ def remove_invalid_chars(
     if singledashes: inputstr = re.sub(r'(-)+', r'-', inputstr)
     return inputstr
 
+
+# COMMAND ----------
+
+# DBTITLE 1,Remove a Substring From a String Input
+def check_str_for_substr_and_replace(inputstr = None, substr = None):
+    """remove a substring from a string input"""
+    if substr in inputstr:
+        return inputstr.replace(substr, '')
+    else: return inputstr
