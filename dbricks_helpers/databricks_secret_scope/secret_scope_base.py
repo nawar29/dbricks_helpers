@@ -45,8 +45,8 @@ def list_all_secret_scopes(dbricks_instance = None, dbricks_pat = None):
   except: return None
   
 
-scopes = list_all_secret_scopes(databricks_instance, databricks_pat)
-print(f"total_secret_scopes: {len(scopes)}; secret_scopes: {scopes}")
+# scopes = list_all_secret_scopes(databricks_instance, databricks_pat)
+# print(f"total_secret_scopes: {len(scopes)}; secret_scopes: {scopes}")
 
 # COMMAND ----------
 
@@ -271,7 +271,7 @@ def recreate_all_secret_scopes(dbricks_instance = None, dbricks_pat = None, inst
         secret_value = val.replace(' ', '') # redacted
         print(f'add secret {secret_name} and value "{secret_value}" to secret scope "{secret_scope_name}": \
           {put_secret_in_secret_scope(dbricks_instance, dbricks_pat, secret_scope_name, secret_name, secret_value)}')
-    else: print("no secret scope secrets exist")
+    else: print("no secret scope secrets to add")
     
     # remove access control list (ACL) permission to group to restore original secret scope acls
     response_acl_removed = remove_secret_scope_acl(dbricks_instance, dbricks_pat, secret_scope_name, write_scope_user)

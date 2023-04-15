@@ -41,6 +41,14 @@ if delete_ss_report_from_azsa == True:
 
 # COMMAND ----------
 
+# DBTITLE 1,Print All Secret Scopes for Migration to New Workspace
+allscopes = []
+for jsonrecord in deploy_instructions_json:
+    allscopes.append(jsonrecord["secret_scope_name"])
+print(allscopes)
+
+# COMMAND ----------
+
 # DBTITLE 1,Recreate Single Secret Scope or All Secret Scopes
 if recreate_all_secret_scopes == True:
   deploy_instructions_final = deploy_instructions
@@ -51,6 +59,7 @@ else: # get subset of secret scopes based on deploy_instructions
       if jsonrecord["secret_scope_name"] == scope:
         scopes_subset.append(jsonrecord)
   deploy_instructions_final = json.dumps(scopes_subset)
+print(deploy_instructions_final)
 
 # COMMAND ----------
 
