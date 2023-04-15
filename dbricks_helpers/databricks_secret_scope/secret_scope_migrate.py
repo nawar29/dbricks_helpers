@@ -32,5 +32,5 @@ storage_account_obj.delete_container(container_name)
 
 # DBTITLE 1,Validate Secrets Scopes Migrated to New Workspace Successfully
 # if 'secret_scope_name' is 'None' then it will process all workspace secret scopes
-instructions = get_secret_scope_report(databricks_migration_instance, databricks_migration_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "READ", secret_scope_name = "aj-dbx")
+instructions = get_secret_scope_report(databricks_migration_instance, databricks_migration_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "READ", secret_scope_name = None)
 print(instructions)
