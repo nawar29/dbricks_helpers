@@ -25,7 +25,7 @@ recreate_all_secret_scopes(databricks_migration_instance, databricks_migration_p
 
 
 # remove local copied secret scope folder and delete container
-shutil.rmtree(dbfsfilepath, ignore_errors = True)
+shutil.rmtree(f'./{storage_account_obj.config["LOCAL_DATA_FOLDER"]}', ignore_errors = True)
 storage_account_obj.delete_container(container_name)
 
 # COMMAND ----------
