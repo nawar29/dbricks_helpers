@@ -1,5 +1,5 @@
 # Databricks notebook source
-# DBTITLE 1,Get Databricks Rest 2.0 Initial Configuration and Base Functions
+# DBTITLE 0,Get Databricks Rest 2.0 Initial Configuration and Base Functions
 # MAGIC %run "./secret_scope_base"
 
 # COMMAND ----------

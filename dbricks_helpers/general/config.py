@@ -4,11 +4,6 @@
 
 # COMMAND ----------
 
-# DBTITLE 1,Import Environment Variables
-# MAGIC %run "./.env"
-
-# COMMAND ----------
-
 # DBTITLE 1,Import Generic Functions
 # MAGIC %run "./general_functions"
 
@@ -18,6 +13,10 @@
 # MAGIC %run "../azure/main"
 
 # COMMAND ----------
+
+# DBTITLE 1,Configuration Class Initialization
+# load .env environment file
+load_dotenv()
 
 class Config:
 # configuration class definition
@@ -32,12 +31,12 @@ class Config:
         self.DATABRICKS_PAT = str(os.getenv('DATABRICKS_PAT'))
         self.DATABRICKS_MIGRATION_INSTANCE = str(os.getenv('DATABRICKS_MIGRATION_INSTANCE'))
         self.DATABRICKS_MIGRATION_PAT = str(os.getenv('DATABRICKS_MIGRATION_PAT'))
-        self.AZURE_STORAGE_ACCOUNT_NAME = str(os.getenv('AZURE_STORAGE_ACCOUNT_NAME'))
+        self.AZURE_STORAGE_ACCOUNT_NAME = f"{str(os.getenv('AZURE_STORAGE_ACCOUNT_NAME'))}{self.ENVIRONMENT}"
         self.AZURE_STORAGE_ACCOUNT_CONTAINER = str(os.getenv('AZURE_STORAGE_ACCOUNT_CONTAINER'))
-        self.AZURE_STORAGE_ACCOUNT_FOLDER_PATH = str(os.getenv('AZURE_STORAGE_ACCOUNT_FOLDER_PATH'))
+        self.AZURE_STORAGE_ACCOUNT_FOLDER_PATH = f'databricks/{self.DATABRICKS_INSTANCE}/secret_scopes'
         self.AZURE_STORAGE_ACCOUNT_FILE_NAME = str(os.getenv('AZURE_STORAGE_ACCOUNT_FILE_NAME'))
         self.AZURE_STORAGE_ACCOUNT_KEY = str(os.getenv('AZURE_STORAGE_ACCOUNT_KEY'))
-        self.AZURE_STORAGE_ACCOUNT_CONN = str(os.getenv('AZURE_STORAGE_ACCOUNT_CONN'))
+        self.AZURE_STORAGE_ACCOUNT_CONN = f'DefaultEndpointsProtocol=https;AccountName={self.AZURE_STORAGE_ACCOUNT_NAME};AccountKey={self.AZURE_STORAGE_ACCOUNT_KEY};EndpointSuffix=core.windows.net'
         self.format_config_vars()
         
 
@@ -86,20 +85,6 @@ databricks_pat = config["DATABRICKS_PAT"]
 databricks_migration_instance = config["DATABRICKS_MIGRATION_INSTANCE"]
 # databricks migration personal access token
 databricks_migration_pat = config["DATABRICKS_MIGRATION_PAT"]
-
-
-# az storage account name
-azsa_name = config["AZURE_STORAGE_ACCOUNT_NAME"]
-# az storage account container
-azsa_container = config["AZURE_STORAGE_ACCOUNT_CONTAINER"]
-# az storage account folder path
-azsa_folderpath = config["AZURE_STORAGE_ACCOUNT_FOLDER_PATH"]
-# az storage account file name
-azsa_filename = config["AZURE_STORAGE_ACCOUNT_FILE_NAME"]
-# az storage account key
-azsa_key = config["AZURE_STORAGE_ACCOUNT_KEY"]
-# az storage account connection string
-azsa_conn = config["AZURE_STORAGE_ACCOUNT_CONN"]
 
 # COMMAND ----------
 

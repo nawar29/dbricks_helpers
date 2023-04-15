@@ -43,7 +43,7 @@ def list_all_secret_scopes(dbricks_instance = None, dbricks_pat = None):
       scopes.append(scope["name"])
     return scopes
   except: return None
-
+  
 
 scopes = list_all_secret_scopes(databricks_instance, databricks_pat)
 print(f"total_secret_scopes: {len(scopes)}; secret_scopes: {scopes}")
