@@ -20,6 +20,9 @@ with open(dbfsfilepath) as fp:
 deploy_instructions = data["payload"]
 
 
+# recreate secret scopes in new workspace (works across cloud environments too)
+recreate_all_secret_scopes(databricks_migration_instance, databricks_migration_pat, deploy_instructions, write_scope_user = "robert.altmiller@databricks.com", write_scope_user_perms = "Write", new_secret_scope_name = None)
+
 
 # remove local copied secret scope folder and delete container
 shutil.rmtree(dbfsfilepath, ignore_errors = True)
@@ -27,4 +30,7 @@ storage_account_obj.delete_container(container_name)
 
 # COMMAND ----------
 
-
+# DBTITLE 1,Validate Secrets Scopes Migrated to New Workspace Successfully
+# if 'secret_scope_name' is 'None' then it will process all workspace secret scopes
+instructions = get_secret_scope_report(databricks_migration_instance, databricks_migration_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "READ", secret_scope_name = "aj-dbx")
+print(instructions)
