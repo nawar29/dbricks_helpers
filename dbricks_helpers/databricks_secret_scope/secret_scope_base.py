@@ -157,6 +157,16 @@ def list_secret_scope_acls(dbricks_instance = None, dbricks_pat = None, scope_na
 
 # COMMAND ----------
 
+# DBTITLE 1,Delete All Secret Scopes in Databricks Workspace
+def delete_all_secret_scopes(dbricks_instance = None, dbricks_pat = None)
+  """delete all secret scopes in a databricks workspace"""
+  scopes = list_all_secret_scopes(databricks_instance, databricks_pat)
+  for scope in scopes:
+    response = delete_secret_scope(databricks_instance, databricks_pat, scope)
+    print(f"{scope} deleted: {response.text}")
+
+# COMMAND ----------
+
 # DBTITLE 1,Create Workspace Secret Scope Report - Applies to a Single Secret Scope or to All Secret Scopes
 def get_secret_scope_report(dbricks_instance = None, dbricks_pat = None, read_scope_user = None, read_scope_user_perms = None, secret_scope_name = None):
   """
