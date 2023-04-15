@@ -7,6 +7,7 @@
 # DBTITLE 1,Read All Secret Scopes in Workspace
 # if 'secret_scope_name' is 'None' then it will process all workspace secret scopes
 instructions = get_secret_scope_report(databricks_instance, databricks_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "READ", secret_scope_name = None)
+print(instructions)
 
 # COMMAND ----------
 
@@ -35,8 +36,3 @@ storage_account_obj.upload_blob_from_local(
 
 # finally remove new dbfs secret scope results
 dbutils.fs.rm(dbfsfilepath, True)
-
-# COMMAND ----------
-
-# recreate secret scopes in new workspace (works across cloud environments too)
-recreate_all_secret_scopes(databricks_migration_instance, databricks_migration_pat, instructions, write_scope_user = "robert.altmiller@databricks.com", write_scope_user_perms = "Write", new_secret_scope_name = None)
