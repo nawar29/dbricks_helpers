@@ -49,7 +49,7 @@ print(allscopes)
 
 # COMMAND ----------
 
-# DBTITLE 1,Recreate Single Secret Scope or All Secret Scopes
+# DBTITLE 1,Recreate Single Secret Scope or All Secret Scopes, and Print Deployment Instructions
 if recreate_all_secret_scopes == True:
   deploy_instructions_final = deploy_instructions
 else: # get subset of secret scopes based on deploy_instructions
@@ -63,6 +63,7 @@ print(deploy_instructions_final)
 
 # COMMAND ----------
 
+# DBTITLE 1,Run Secret Scope Creation Deployment Instructions From Previous Step 
 # recreate secret scopes in new workspace (works across cloud environments too)
 recreate_all_secret_scopes(databricks_migration_instance, databricks_migration_pat, deploy_instructions_final, write_scope_user = "robert.altmiller@databricks.com", write_scope_user_perms = "Write", new_secret_scope_name = "adnan")
 
@@ -72,4 +73,3 @@ recreate_all_secret_scopes(databricks_migration_instance, databricks_migration_p
 # if 'secret_scope_name' is 'None' then it will process all workspace secret scopes
 instructions = get_secret_scope_report(databricks_migration_instance, databricks_migration_pat, read_scope_user = "robert.altmiller@databricks.com", read_scope_user_perms = "READ", secret_scope_name = None)
 print(instructions)
-
