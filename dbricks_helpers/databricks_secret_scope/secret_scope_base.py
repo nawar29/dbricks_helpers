@@ -163,7 +163,7 @@ def delete_all_secret_scopes(dbricks_instance = None, dbricks_pat = None)
   scopes = list_all_secret_scopes(databricks_instance, databricks_pat)
   for scope in scopes:
     response = delete_secret_scope(databricks_instance, databricks_pat, scope)
-    print(f"{scope} deleted: {response.text}")
+    print(f"{scope} deleted: {response}")
 
 # COMMAND ----------
 
