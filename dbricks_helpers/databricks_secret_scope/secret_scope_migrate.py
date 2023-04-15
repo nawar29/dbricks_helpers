@@ -63,8 +63,8 @@ print(deploy_instructions_final)
 
 # COMMAND ----------
 
-# recreate secret scopes in new workspace (works across cloud environments too)cccccbeutijibvgtgficignibvknlctnelkdjgnvltbe
-recreate_all_secret_scopes(databricks_migration_instance, databricks_migration_pat, deploy_instructions_final, write_scope_user = "robert.altmiller@databricks.com", write_scope_user_perms = "Write", new_secret_scope_name = None)
+# recreate secret scopes in new workspace (works across cloud environments too)
+recreate_all_secret_scopes(databricks_migration_instance, databricks_migration_pat, deploy_instructions_final, write_scope_user = "robert.altmiller@databricks.com", write_scope_user_perms = "Write", new_secret_scope_name = "adnan")
 
 # COMMAND ----------
 
