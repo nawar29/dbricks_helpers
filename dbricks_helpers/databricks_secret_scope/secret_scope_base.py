@@ -91,10 +91,10 @@ def list_all_secret_scopes_secrets(dbricks_instance = None, dbricks_pat = None, 
   """list databricks secret scopes secrets"""
   try:
     jsondata = {"scope": scope_name}
-    response = execute_rest_api_call(get_request, get_api_config(dbricks_instance, "secrets", "list"), databricks_pat, jsondata)
+    response = execute_rest_api_call(get_request, get_api_config(dbricks_instance, "secrets", "list"), dbricks_pat, jsondata)
     secrets = []
-    for scope in json.loads(response.text)["secrets"]:
-      secrets.append(scope["key"])
+    for secret in json.loads(response.text)["secrets"]:
+        secrets.append(secret["key"])
     return secrets
   except: return None
 
@@ -171,7 +171,7 @@ def get_secret_scope_report(dbricks_instance = None, dbricks_pat = None, read_sc
   # iterate over all workspace secret scopes and get secret scopes data
   if secret_scope_name == None: 
     # process all workspace secret scopes
-    secret_scopes = list_all_secret_scopes(dbricks_instance, databricks_pat)
+    secret_scopes = list_all_secret_scopes(dbricks_instance, dbricks_pat)
   else: # process one single secret scope 
     secret_scopes = [secret_scope_name] 
   
@@ -242,6 +242,9 @@ def recreate_all_secret_scopes(dbricks_instance = None, dbricks_pat = None, inst
     print(f'create secret scope "{secret_scope_name}": \
       {create_secret_scope(dbricks_instance, dbricks_pat, secret_scope_name)}')
 
+    # apply access control list (ACL) permission to group to write secret values
+    response_acl_applied = add_secret_scope_acl(dbricks_instance, dbricks_pat, secret_scope_name, write_scope_user, write_scope_user_perms)
+
     # add acl permissions to secret scope
     if secret_scope_acls != None:
       for acl in secret_scope_acls:
@@ -250,9 +253,6 @@ def recreate_all_secret_scopes(dbricks_instance = None, dbricks_pat = None, inst
         print(f'apply permission {acl} to secret scope "{secret_scope_name}": \
             {add_secret_scope_acl(dbricks_instance, dbricks_pat, secret_scope_name, principal, permission)}')
     else: print("no secret scope access control lists to add")
-
-    # apply access control list (ACL) permission to group to write secret values
-    response_acl_applied = add_secret_scope_acl(dbricks_instance, dbricks_pat, secret_scope_name, write_scope_user, write_scope_user_perms)
 
     # add secrets to secret scope
     if secret_scope_secrets != None:
