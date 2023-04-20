@@ -227,7 +227,7 @@ def get_secret_scope_report(dbricks_instance = None, dbricks_pat = None, read_sc
 
 # COMMAND ----------
 
-# DBTITLE 1,Execute Workspace Secret Scope Report For Recreation of a Single Secret Scope All Workspace Secret Scope
+# DBTITLE 1,Execute Workspace Secret Scope Report For Recreation of a Single Secret Scope or All Workspace Secret Scopes
 def recreate_all_secret_scopes(dbricks_instance = None, dbricks_pat = None, instructions = None, write_scope_user = None, write_scope_user_perms = None,  new_secret_scope_name = None):
   """
   recreates all secret scopes in a databricks workspace with correct permissions and secrets all copied over
@@ -238,11 +238,16 @@ def recreate_all_secret_scopes(dbricks_instance = None, dbricks_pat = None, inst
   json_secret_scope_obj = json.loads(instructions)
 
   for secretscope in json_secret_scope_obj:
+
+    # workspace name
     workspace_name = secretscope['workspace'].replace(' ', '') #redacted
+    
     if new_secret_scope_name == None: secret_scope_name = secretscope['secret_scope_name'] # overwrite same secret scope 
     else: secret_scope_name = new_secret_scope_name # make a new secret scope
-    secret_scope_acls = secretscope["secret_scope_acls"]
-    secret_scope_secrets = secretscope["secret_scope_secrets"]
+    
+    # secret scope acls and secrets lists
+    secret_scope_acls = secretscope["secret_scope_acls"] # secret scope acls list
+    secret_scope_secrets = secretscope["secret_scope_secrets"] # secret scope secrets list
 
     # delete secret scope
     print(f'delete secret scope "{secret_scope_name}": \
@@ -276,6 +281,6 @@ def recreate_all_secret_scopes(dbricks_instance = None, dbricks_pat = None, inst
     # remove access control list (ACL) permission to group to restore original secret scope acls
     response_acl_removed = remove_secret_scope_acl(dbricks_instance, dbricks_pat, secret_scope_name, write_scope_user)
 
-    # break if secret_scope_name = new_secret_scope_name
-    if secret_scope_name == new_secret_scope_name: break
+    # break after one loop because we created a new secret scope based on the settings in 'instructions'
+    if new_secret_scope_name != None: break
     print("\n")

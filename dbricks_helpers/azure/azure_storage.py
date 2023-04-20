@@ -25,9 +25,14 @@ class azurestorageaccount(azureclass):
         self.config["AZURE_STORAGE_ACCOUNT_CONTAINER"] = az_storage_account_container_name
 
 
-    def set_azure_storage_acct_folder_path_override(self, az_storage_acct_foldpath = None):
+    def set_azure_storage_acct_folder_path_override(self, az_storage_acct_folderpath = None):
         """set a new azure storage account folder path"""
-        self.config["AZURE_STORAGE_ACCOUNT_FOLDER_PATH"] = az_storage_acct_foldpath
+        self.config["AZURE_STORAGE_ACCOUNT_FOLDER_PATH"] = az_storage_acct_folderpath
+
+
+    def set_azure_storage_acct_subfolder_path_override(self, az_storage_acct_subfolderpath = None):
+        """set a new azure storage account folder path"""
+        self.config["AZURE_STORAGE_ACCOUNT_SUBFOLDER_PATH"] = az_storage_acct_subfolderpath
 
 
     def set_azure_storage_acct_file_name_override(self, az_storage_acct_filename = None):
@@ -47,7 +52,7 @@ class azurestorageaccount(azureclass):
 
     def get_blob_file_path(self):
         """get blob file path for download from azure storage account container"""
-        return f'{self.config["AZURE_STORAGE_ACCOUNT_FOLDER_PATH"]}/{self.config["AZURE_STORAGE_ACCOUNT_FILE_NAME"]}'
+        return f'{self.config["AZURE_STORAGE_ACCOUNT_FOLDER_PATH"]}/{self.config["AZURE_STORAGE_ACCOUNT_SUBFOLDER_PATH"]}/{self.config["AZURE_STORAGE_ACCOUNT_FILE_NAME"]}'
 
 
     def create_blob_client(self):
