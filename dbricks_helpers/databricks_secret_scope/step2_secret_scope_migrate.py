@@ -15,7 +15,7 @@ delete_ss_report_from_dbfs = True
 recreate_all_secret_scopes = True
 
 # secret scopes to re-create
-recreate_secret_scopes_list = ["adnan"] # user defined
+recreate_secret_scopes_list = ["adnan"] # user defined (default = [])
 if len(recreate_secret_scopes_list) > 0: recreate_all_secret_scopes = False
 
 # COMMAND ----------

@@ -51,7 +51,3 @@ print(f"response: {response}; response_text: {response.text}")
 jsondata = {"cluster_id": "0315-183149-vhl3qthn"}
 response = execute_rest_api_call(post_request, delete_cluster_config, databricks_pat, jsondata)
 print(f"response: {response}; response_text: {response.text}")
-
-# COMMAND ----------
-
-

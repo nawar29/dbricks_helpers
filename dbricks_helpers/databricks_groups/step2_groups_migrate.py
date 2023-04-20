@@ -15,7 +15,7 @@ delete_groups_report_from_dbfs = True
 recreate_all_groups = True
 
 # secret scopes to re-create
-recreate_groups_list = ["test123"] # user defined
+recreate_groups_list = ["test123"] # user defined (e.g. default = [])
 if len(recreate_groups_list) > 0: recreate_all_groups = False
 
 # COMMAND ----------
@@ -73,10 +73,6 @@ else: # get subset of secret scopes based on deploy_instructions
         groups_subset.append(jsonrecord)
   deploy_instructions_final = json.dumps(groups_subset)
 print(deploy_instructions_final)
-
-# COMMAND ----------
-
-
 
 # COMMAND ----------
 

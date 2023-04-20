@@ -13,12 +13,12 @@ def list_all_groups(dbricks_instance = None, dbricks_pat = None):
     groups = []
     for group in json.loads(response.text)["group_names"]:
       groups.append(group)
-    return groups
+    return sorted(groups)
   except: return None
 
 
-# groups = list_all_groups(databricks_instance, databricks_pat)
-# print(groups)
+groups = list_all_groups(databricks_instance, databricks_pat)
+print(groups)
 
 # COMMAND ----------
 
@@ -49,7 +49,7 @@ def list_group_members(dbricks_instance = None, dbricks_pat = None, group_name =
   except: return None
 
 
-# group_name = "ANALYST_USA"
+# group_name = "account users"
 # groupmembers = list_group_members(databricks_instance, databricks_pat, group_name)
 # print(f"{groupmembers}")
 
@@ -152,13 +152,104 @@ def delete_group(dbricks_instance = None, dbricks_pat = None, group_name = None)
   response = execute_rest_api_call(post_request, get_api_config(dbricks_instance, "groups", "delete"), databricks_pat, jsondata)
   return response
 
-# group_name = "dbricks-readers"
-# response = delete_group(databricks_instance, databricks_pat, jsondata)
+
+# group_name = "reporting-department2"
+# response = delete_group(databricks_instance, databricks_pat, group_name)
 # print(f"response: {response}; response_text: {response.text}")
 
 # COMMAND ----------
 
+# DBTITLE 1,Databricks Scim 2.0 -  Get User_Name Id
+def get_userid_scim(dbricks_instance = None, dbricks_pat = None, user_name = None):
+  """get a user name id using scim api"""
+  scim_user_config = get_api_config(dbricks_instance, "preview/scim/v2", "Users")
+  scim_user_config["api_full_url"] = f'{scim_user_config["api_full_url"]}?filter=userName+eq+{url_encode_str(user_name)}'
+  response = execute_rest_api_call(get_request, scim_user_config, databricks_pat, jsondata = None)
+  return json.loads(response.text)["Resources"][0]["id"]
+
+# user_name = "195f1fab-d8fe-4b78-ae1f-cdb9ca7fd0c6"
+# user_name_id = get_userid_scim(databricks_instance, databricks_pat, user_name)
+# print(user_name_id)
+
+# COMMAND ----------
+
+# DBTITLE 1,Databricks Scim 2.0 - Get Group_Name Id
+def get_groupid_scim(dbricks_instance = None, dbricks_pat = None, group_name = None):
+  """get a user group name id using scim api"""
+  scim_group_config = get_api_config(dbricks_instance, "preview/scim/v2", "Groups")
+  scim_group_config["api_full_url"] = f'{scim_group_config["api_full_url"]}?filter=displayName+eq+{url_encode_str(group_name)}'
+  response = execute_rest_api_call(get_request, scim_group_config, databricks_pat, jsondata = None)
+  return json.loads(response.text)["Resources"][0]["id"]
+
+
+# group_name = "018"
+# group_name_id = get_groupid_scim(databricks_instance, databricks_pat, group_name)
+# print(group_name_id)
+
+# COMMAND ----------
+
+# DBTITLE 1,Databricks Scim 2.0 - Get Service_Principle_Name Id
+def get_serviceprincipalid_scim(dbricks_instance = None, dbricks_pat = None, sp_name = None):
+  """get a service principal name id using scim api"""
+  scim_serviceprincipal_config = get_api_config(dbricks_instance, "preview/scim/v2", "ServicePrincipals")
+  scim_serviceprincipal_config["api_full_url"] = f'{scim_serviceprincipal_config["api_full_url"]}?filter=applicationId+eq+{url_encode_str(sp_name)}'
+  response = execute_rest_api_call(get_request, scim_serviceprincipal_config, databricks_pat, jsondata = None)
+  return json.loads(response.text)["Resources"][0]["id"]
+
+
+# service_principle_name = "195f1fab-d8fe-4b78-ae1f-cdb9ca7fd0c6"
+# service_principle_name_id = get_serviceprincipalid_scim(databricks_instance, databricks_pat, service_principle_name)
+# print(service_principle_name_id)
+
+# COMMAND ----------
+
+# DBTITLE 1,Databricks Scim 2.0 - Create Group
+def create_group_scim(dbricks_instance = None, dbricks_pat = None, group_name = None):
+  """create a workspace group in an organization using scim api"""
+  jsondata = {
+    "schemas": [ "urn:ietf:params:scim:schemas:core:2.0:Group" ],
+    "displayName": group_name
+    # "members": [
+    #   {
+    #     "value": "4343410467005630" # user_name id
+    #   }
+    # ],
+    # "entitlements": [
+    #   {
+    #     "value":"workspace-access"
+    #   }
+    # ]
+  }
+  response = execute_rest_api_call(post_request, get_api_config(dbricks_instance, "preview/scim/v2", "Groups"), databricks_pat, jsondata)
+  return response
+
+group_name = "reporting-department2"
+response = create_group_scim(databricks_instance, databricks_pat, group_name)
+print(f"response: {response}; response_text: {response.text}")
+
+# COMMAND ----------
+
 # DBTITLE 1,Create Workspace Groups Report - Applies to a Single Group or to All Groups
+def create_users_groups_with_ids(dbricks_instance = None, dbricks_pat = None, group_members = None):
+  """get a user id for each user name and group id for each group name and make json object"""
+  resultslist = []
+  counter = 1
+  for member in group_members:
+    try: #user
+      resultsdict = {}
+      resultsdict["user_name"] = member["user_name"]
+      try: resultsdict["user_name_id"] = get_userid_scim(dbricks_instance, dbricks_pat, member["user_name"])
+      except: resultsdict["user_name_id"] = get_serviceprincipalid_scim(dbricks_instance, dbricks_pat, member["user_name"])
+    except: # group
+      resultsdict = {}
+      resultsdict["group_name"] = member["group_name"]
+      resultsdict["group_name_id"] = get_groupid_scim(dbricks_instance, dbricks_pat, member["group_name"])
+    resultslist.append(resultsdict)
+    print(f"get id for {resultsdict} completed...." )
+    counter += 1
+  return resultslist
+
+
 def get_groups_report(dbricks_instance = None, dbricks_pat = None, group_name = None):
   """
   get a report of all the groups or individual group in a databricks workspacwe
@@ -167,7 +258,7 @@ def get_groups_report(dbricks_instance = None, dbricks_pat = None, group_name = 
   
   SS_REPORT_ITEMS = {}
   SS_REPORT_FINAL_GROUPS = []
-  SS_REPORT_FINAL_USER_GROUPS = []
+  #SS_REPORT_FINAL_USER_GROUPS = []
   worspace_allusers = []
 
   # iterate over single group or all workspace groups
@@ -181,6 +272,9 @@ def get_groups_report(dbricks_instance = None, dbricks_pat = None, group_name = 
   counter = 1
   for group in workspacegroups:
 
+    # start - print groups processing status
+    print(f'{counter}. group "{group}" started.....\n')
+
     # databricks instance / workspace name
     SS_REPORT_ITEMS["workspace"] = workspace_name
 
@@ -190,18 +284,18 @@ def get_groups_report(dbricks_instance = None, dbricks_pat = None, group_name = 
     # get a list of all group members
     group_members = list_group_members(dbricks_instance, dbricks_pat, group)
     if group_members != None: 
-      SS_REPORT_ITEMS["group_members_count"] = len(group_members)  
+      SS_REPORT_ITEMS["group_members_count"] = len(group_members)
+      SS_REPORT_ITEMS["group_members"] = create_users_groups_with_ids(dbricks_instance, dbricks_pat, group_members)
       # get a running list of workspace members
-      worspace_allusers += group_members
+      #worspace_allusers += group_members
     else: SS_REPORT_ITEMS["group_members_count"] = 0
-    SS_REPORT_ITEMS["group_members"] = group_members
 
     # append group results
     SS_REPORT_FINAL_GROUPS.append(SS_REPORT_ITEMS)
     SS_REPORT_ITEMS = {}
 
-    # print groups processing status
-    print(f'{counter}. group "{group}" processed.....')
+    # end - print groups processing status
+    print(f'{counter}. group "{group}" completed.....\n')
     counter += 1
   
   # get all the groups each user is assigned to in databricks workspace
@@ -209,10 +303,10 @@ def get_groups_report(dbricks_instance = None, dbricks_pat = None, group_name = 
   allusergroupsdict = {}
 
   # remove duplicates from workspace_allusers
-  worspace_allusers = [i for n, i in enumerate(worspace_allusers) if i not in worspace_allusers[:n]] 
+  # worspace_allusers = [i for n, i in enumerate(worspace_allusers) if i not in worspace_allusers[:n]] 
   # exclude groups and only include users
-  worspace_allusers = [user for user in worspace_allusers if "'user_name'" in str(user)]
-  print(f"total workspace users to process for user groups: {len(worspace_allusers)}")
+  # worspace_allusers = [user for user in worspace_allusers if "'user_name'" in str(user)]
+  # print(f"total workspace users to process for user groups: {len(worspace_allusers)}")
 
   # get all groups single users are a part of
   # counter = 1
@@ -263,20 +357,20 @@ def recreate_all_groups(dbricks_instance = None, dbricks_pat = None, instruction
     print(f'delete group "{group_name}": \
       {delete_group(dbricks_instance, dbricks_pat, group_name)}')
     
-    # create group
+    # create group (scim method)
     print(f'create group "{group_name}": \
-      {create_group(dbricks_instance, dbricks_pat, group_name)}')
+      {create_group_scim(dbricks_instance, dbricks_pat, group_name)}')
 
     # add members (e.g. users and groups) to created group
-    for member in group_members:
-      try: # add a user to a group
-        member_name = member["user_name"]
-        print(f'add member "{member_name}" to group "{group_name}": \
-          {add_user_to_group(dbricks_instance, dbricks_pat, member_name, group_name)}')
-      except: # add a group to a group 
-        member_name = member["group_name"]
-        print(f'add group "{member_name}" to group "{group_name}": \
-          {add_group_to_group(dbricks_instance, dbricks_pat, member_name, group_name)}')
+    # for member in group_members:
+    #   try: # add a user to a group
+    #     member_name = member["user_name"]
+    #     print(f'add member "{member_name}" to group "{group_name}": \
+    #       {add_user_to_group(dbricks_instance, dbricks_pat, member_name, group_name)}')
+    #   except: # add a group to a group 
+    #     member_name = member["group_name"]
+    #     print(f'add group "{member_name}" to group "{group_name}": \
+    #       {add_group_to_group(dbricks_instance, dbricks_pat, member_name, group_name)}')
 
     # break after one loop because we created a new group based on the settings in 'instructions'
     if new_group_name != None: break
