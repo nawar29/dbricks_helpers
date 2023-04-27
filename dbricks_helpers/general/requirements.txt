@@ -1,6 +1,7 @@
+azure-identity
+azure-storage-blob
+python-dotenv
+numpy
 pandas
 pyspark
 requests
-numpy
-azure-storage-blob
-azure-identity

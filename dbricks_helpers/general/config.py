@@ -27,8 +27,8 @@ class Config:
         # variables
         self.ENVIRONMENT = str(os.getenv('ENVIRONMENT'))
         self.LOCAL_DATA_FOLDER = str(os.getenv('LOCAL_DATA_FOLDER'))
-        self.DATABRICKS_INSTANCE = str(os.getenv('DATABRICKS_INSTANCE'))
-        self.DATABRICKS_PAT = str(os.getenv('DATABRICKS_PAT'))
+        self.DATABRICKS_INSTANCE = str(spark.conf.get("spark.databricks.workspaceUrl"))
+        self.DATABRICKS_PAT = str(dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get())
         self.DATABRICKS_MIGRATION_INSTANCE = str(os.getenv('DATABRICKS_MIGRATION_INSTANCE'))
         self.DATABRICKS_MIGRATION_PAT = str(os.getenv('DATABRICKS_MIGRATION_PAT'))
         self.AZURE_STORAGE_ACCOUNT_NAME = f"{str(os.getenv('AZURE_STORAGE_ACCOUNT_NAME'))}{self.ENVIRONMENT}"

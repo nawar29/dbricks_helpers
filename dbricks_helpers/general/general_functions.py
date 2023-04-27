@@ -42,6 +42,21 @@ def create_dbfs_folder(folderpath = None):
 
 # COMMAND ----------
 
+# DBTITLE 1,Move File Into Databricks DBFS
+def copy_file_into_dbfs(currentfilepath = None, dbfsnewfolderpath = None, overwrite = True):
+  """move a local file in databricks into databricks file system"""
+  try:
+    result = create_dbfs_folder(dbfsnewfolderpath)
+    currfolderpath = currentfilepath.rsplit("/", 1)[0]
+    currfilename = currentfilepath.rsplit("/", 1)[1]
+    dbfsnewfilepath = f"{dbfsnewfolderpath}/{currfilename}"
+    dbutils.fs.cp(currentfilepath, dbfsnewfilepath, overwrite)
+    return print(f"{currentfilepath} copied to {dbfsnewfilepath} successfully.....")
+  except:
+    return f"{currentfilepath} could not be copied to {dbfsnewfilepath}....."
+
+# COMMAND ----------
+
 # DBTITLE 1,Delete Databricks File System Folder
 def delete_dbfs_folder(folderpath = None):
   """delete databricks file system folder"""
