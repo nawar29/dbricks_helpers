@@ -116,3 +116,28 @@ def check_str_for_substr_and_replace(inputstr = None, substr = None):
 def url_encode_str(inputstr = None):
   """url encode an input string"""
   return urllib.parse.quote_plus(inputstr)
+
+# COMMAND ----------
+
+# DBTITLE 1,Remove Null and Blank Attributes from Complex Nested Json Dictionary
+def remove_blank_attributes(json_dict):
+  """
+  recursive function to remove all null, none, [], and other blank
+  attributes from a complex nested json dictionary
+  """
+  cleaned_dict = {}
+  for key, value in json_dict.items():
+    if value:
+      if isinstance(value, dict):
+        cleaned_value = remove_blank_attributes(value)
+        if cleaned_value: cleaned_dict[key] = cleaned_value
+      elif isinstance(value, list):
+        cleaned_list = []
+        for item in value:
+          if isinstance(item, dict):
+            cleaned_item = remove_blank_attributes(item)
+            if cleaned_item: cleaned_list.append(cleaned_item)
+          elif item: cleaned_list.append(item)
+        if cleaned_list: cleaned_dict[key] = cleaned_list
+      else: cleaned_dict[key] = value
+  return cleaned_dict
