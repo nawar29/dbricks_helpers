@@ -141,3 +141,41 @@ def remove_blank_attributes(json_dict):
         if cleaned_list: cleaned_dict[key] = cleaned_list
       else: cleaned_dict[key] = value
   return cleaned_dict
+
+# COMMAND ----------
+
+# DBTITLE 1,Upload Databricks API Results to Azure Storage and DBFS
+def upload_to_dbfs_and_azure_storage(azstorageobj, instructions):
+  # write dbricks api results to DBFS
+  schema = StructType(
+    [
+      StructField('payload', StringType(), True)
+    ]
+  )
+  df = spark.createDataFrame(data = [[instructions]], schema = schema)
+
+
+  dbfsfilepath = f'{azstorageobj.config["AZURE_STORAGE_ACCOUNT_FOLDER_PATH"]}/{azstorageobj.config["AZURE_STORAGE_ACCOUNT_SUBFOLDER_PATH"]}/{azstorageobj.config["AZURE_STORAGE_ACCOUNT_FILE_NAME"]}'
+  # clean up old dbfs dbricks api results
+  dbutils.fs.rm(dbfsfilepath, True)
+  df.coalesce(1).write.mode("overwrite").format('json').save(dbfsfilepath)
+
+
+  # write dbricks api results to azure storage account
+  processing = True
+  while(processing):
+      try:
+        azstorageobj.delete_container(azstorageobj.config["AZURE_STORAGE_ACCOUNT_CONTAINER"])
+        processing = False
+      except:
+        time.sleep(5) # need time for azure storage account container to be deleted
+  azstorageobj.upload_blob_from_local(
+    storageacctname = azstorageobj.config["AZURE_STORAGE_ACCOUNT_NAME"], 
+    container = azstorageobj.config["AZURE_STORAGE_ACCOUNT_CONTAINER"],
+    localfilepath = f'/dbfs/{dbfsfilepath}/{get_dbfs_file_name(dbfsfilepath, ".json")}', 
+    blobfilepath = dbfsfilepath, 
+    overwrite = True
+  )
+
+  # finally remove new dbfs dbricks api results
+  dbutils.fs.rm(dbfsfilepath, True)

@@ -31,13 +31,14 @@ class Config:
         self.DATABRICKS_PAT = str(dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get())
         self.DATABRICKS_MIGRATION_INSTANCE = str(os.getenv('DATABRICKS_MIGRATION_INSTANCE'))
         self.DATABRICKS_MIGRATION_PAT = str(os.getenv('DATABRICKS_MIGRATION_PAT'))
-        self.AZURE_STORAGE_ACCOUNT_NAME = f"{str(os.getenv('AZURE_STORAGE_ACCOUNT_NAME'))}{self.ENVIRONMENT}"
+        self.AZURE_STORAGE_ACCOUNT_NAME = f"{str(os.getenv('AZURE_STORAGE_ACCOUNT_NAME'))}"
         self.AZURE_STORAGE_ACCOUNT_CONTAINER = str(os.getenv('AZURE_STORAGE_ACCOUNT_CONTAINER'))
-        self.AZURE_STORAGE_ACCOUNT_SUBFOLDER_PATH = str("secret_scope")
+        self.AZURE_STORAGE_ACCOUNT_SUBFOLDER_PATH = str('')
         self.AZURE_STORAGE_ACCOUNT_FOLDER_PATH = f'databricks/{self.DATABRICKS_INSTANCE}'
         self.AZURE_STORAGE_ACCOUNT_FILE_NAME = str(os.getenv('AZURE_STORAGE_ACCOUNT_FILE_NAME'))
         self.AZURE_STORAGE_ACCOUNT_KEY = str(os.getenv('AZURE_STORAGE_ACCOUNT_KEY'))
         self.AZURE_STORAGE_ACCOUNT_CONN = f'DefaultEndpointsProtocol=https;AccountName={self.AZURE_STORAGE_ACCOUNT_NAME};AccountKey={self.AZURE_STORAGE_ACCOUNT_KEY};EndpointSuffix=core.windows.net'
+        self.AZURE_STORAGE_ACCOUNT_SAS_TOKEN = str('')
         self.format_config_vars()
         
 

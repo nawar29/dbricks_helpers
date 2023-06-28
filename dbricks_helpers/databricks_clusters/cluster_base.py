@@ -40,13 +40,13 @@ def create_cluster(dbricks_instance = None, dbricks_pat = None, cluster_name = N
   return response
 
 
-# cluster_name = "test gpu cluster 1"
-# spark_version = "12.2.x-gpu-ml-scala2.12"
-# spark_driver_type = "g5.4xlarge"
+# cluster_name = "test-cluster"
+# spark_version = "12.2.x-scala2.12"
+# spark_driver_type = "Standard_DS3_v2"
 # username = spark.sql('select current_user() as user').collect()[0]['user']
 # response = create_cluster(databricks_instance, databricks_pat, cluster_name, spark_version, spark_driver_type, username)
 # cluster_id = response.text 
-# print(f"response: {response}; cluster_id: {clusterid}")
+# print(f"response: {response}; cluster_id: {cluster_id}")
 
 # COMMAND ----------
 
@@ -77,7 +77,7 @@ def get_cluster_id(dbricks_instance = None, dbricks_pat = None, cluster_name = N
   return None
 
 
-# cluster_name = "test gpu cluster 1"
+# cluster_name = "test-cluster"
 # cluster_id = get_cluster_id(databricks_instance, databricks_pat, cluster_name)
 # print(f"cluster id: {cluster_id}")
 

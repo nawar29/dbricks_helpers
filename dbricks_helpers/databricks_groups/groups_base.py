@@ -17,8 +17,8 @@ def list_all_groups(dbricks_instance = None, dbricks_pat = None):
   except: return None
 
 
-groups = list_all_groups(databricks_instance, databricks_pat)
-print(groups)
+# groups = list_all_groups(databricks_instance, databricks_pat)
+# print(groups)
 
 # COMMAND ----------
 

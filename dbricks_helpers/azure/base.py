@@ -31,7 +31,3 @@ class azureclass:
     def azure_client_secret_override(self, azure_client_secret = None):
         """set a new azure client id (e.g. service principle password)"""
         self.config["AZURE_CLIENT_SECRET"] = azure_client_secret
-
-# COMMAND ----------
-
-

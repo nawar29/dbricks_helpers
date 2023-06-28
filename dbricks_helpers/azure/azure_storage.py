@@ -25,6 +25,11 @@ class azurestorageaccount(azureclass):
         self.config["AZURE_STORAGE_ACCOUNT_CONTAINER"] = az_storage_account_container_name
 
 
+    def set_azure_storage_acct_sas_token_override(self, azure_storage_acct_sas_token = None):
+        """set a new azure client id (e.g. service principle password)"""
+        self.config["AZURE_STORAGE_ACCOUNT_SAS_TOKEN"] = azure_storage_acct_sas_token
+
+
     def set_azure_storage_acct_folder_path_override(self, az_storage_acct_folderpath = None):
         """set a new azure storage account folder path"""
         self.config["AZURE_STORAGE_ACCOUNT_FOLDER_PATH"] = az_storage_acct_folderpath
@@ -45,14 +50,25 @@ class azurestorageaccount(azureclass):
         return BlobServiceClient.from_connection_string(self.config["AZURE_STORAGE_ACCOUNT_CONN"])
 
 
-    def create_container_client(self):
+    def create_blob_service_client_sas(self):
+        """create azure storage blob service client using shared access signature token"""
+        return BlobServiceClient(f"https://{self.config['AZURE_STORAGE_ACCOUNT_NAME']}.blob.core.windows.net/", credential = self.config["AZURE_STORAGE_ACCOUNT_SAS_TOKEN"])
+
+
+    def create_container_client(self, sas_token = None):
         """create azure storage account container client"""
-        return self.create_blob_service_client().get_container_client(self.config["AZURE_STORAGE_ACCOUNT_CONTAINER"])
+        if sas_token != None: # use sas token for auth
+            storage_account_obj.set_azure_storage_acct_sas_token_override(sas_token)
+            return self.create_blob_service_client_sas().get_container_client(self.config["AZURE_STORAGE_ACCOUNT_CONTAINER"])
+        else: return self.create_blob_service_client().get_container_client(self.config["AZURE_STORAGE_ACCOUNT_CONTAINER"])
 
 
     def get_blob_file_path(self):
         """get blob file path for download from azure storage account container"""
-        return f'{self.config["AZURE_STORAGE_ACCOUNT_FOLDER_PATH"]}/{self.config["AZURE_STORAGE_ACCOUNT_SUBFOLDER_PATH"]}/{self.config["AZURE_STORAGE_ACCOUNT_FILE_NAME"]}'
+        blobfilepath = f'{self.config["AZURE_STORAGE_ACCOUNT_FOLDER_PATH"]}/{self.config["AZURE_STORAGE_ACCOUNT_SUBFOLDER_PATH"]}/{self.config["AZURE_STORAGE_ACCOUNT_FILE_NAME"]}'
+        blobfilepath = blobfilepath.replace('//', '/')
+        print(f"blobfilepath: {blobfilepath}")
+        return blobfilepath
 
 
     def create_blob_client(self):
@@ -65,10 +81,10 @@ class azurestorageaccount(azureclass):
     
     def create_container(self, containername = None):
         """create azure storage account container"""
-        try:
-          self.create_blob_service_client().create_container(containername)
-          print(f"azure storage account container created successfully: {containername}\n")
-        except: print(f"create azure storage account container failed: container {containername} already exists...\n")
+        # try:
+        self.create_blob_service_client().create_container(containername)
+        print(f"azure storage account container created successfully: {containername}\n")
+        # except: print(f"create azure storage account container failed: container {containername} already exists...\n")
 
 
     def delete_container(self, containername = None):
@@ -79,8 +95,10 @@ class azurestorageaccount(azureclass):
         except: print(f"delete azure storage account container and all files failed: container {containername} does not exist...\n")
 
 
-    def get_blob_list(self):
+    def get_blob_list(self, sas_token = None):
         """get list of blobs in azure storage account container"""
+        if sas_token != None: # use sas token for auth
+            return self.create_container_client(sas_token).list_blobs()
         return self.create_container_client().list_blobs()
 
 
@@ -100,7 +118,19 @@ class azurestorageaccount(azureclass):
         return self.create_blob_client().download_blob()
 
 
-    def download_blob_write_locally(self, storageacctname = None, container = None, folderpath = None, filename = None):
+    def listblobfiles(self, storageacctname = None, container = None, folderpath = None, sas_token = None):
+        """list specific blob files in an azure storage account container"""
+        self.set_azure_storage_acct_name_override(storageacctname)
+        self.set_azure_storage_acct_container_name_override(container)
+        files = self.get_blob_list(sas_token)
+        filelist = []
+        for file in files:
+            if file.name.startswith(folderpath):
+                filelist.append(file.name)
+        return filelist
+
+
+    def download_blob_write_locally(self, storageacctname = None, container = None, folderpath = None, subfolderpath = None, filename = None, data_sas = None):
         """
         download azure storage container blob and maintain blob folder structure locally
         return local file path each time this function is called
@@ -108,16 +138,19 @@ class azurestorageaccount(azureclass):
         self.set_azure_storage_acct_name_override(storageacctname)
         self.set_azure_storage_acct_container_name_override(container)
         self.set_azure_storage_acct_folder_path_override(folderpath)
+        self.set_azure_storage_acct_subfolder_path_override(subfolderpath)
         self.set_azure_storage_acct_file_name_override(filename)
         localpath = check_str_for_substr_and_replace(f'./{self.config["LOCAL_DATA_FOLDER"]}/azurestorage/{storageacctname}/{container}/{folderpath}', "//")
+        print(f"bloblocalpath: {localpath}")
         if not os.path.exists(localpath): os.makedirs(localpath)
         localfilepath = f"{localpath}/{filename}"
         with open(localfilepath, "wb") as my_blob:
-            blob_data = self.download_blob()
-            blob_data.readinto(my_blob)
+            if data_sas == None:
+                blob_data = self.download_blob()
+                blob_data.readinto(my_blob)
+            else: my_blob.write(data_sas)
         print(f"{localfilepath} written locally successfully....\n")
         return localfilepath
-
 
 
     def upload_blob_from_local(self, storageacctname = None, container = None, localfilepath = None, blobfilepath = None, overwrite = False):
