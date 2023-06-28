@@ -14,12 +14,12 @@ if method == "storageaccount":
     # ft = flight tech secret scope variables
     scope_name_ft = "flight_tech_secretscope"
     secret_name_ft = "flight-tech-sas-token-dbfsfiles"
-    secret_value_ft = "?si=dbfsfilespolicy&spr=https&sv=2022-11-02&sr=c&sig=IFKbYRjZhCxVHvMNfOT%2FQDn5HE5QX1hUpFtCObNPljM%3D" # regular storage account --> container level (dbfs-files)
+    secret_value_ft = "?si=dbfsf" # regular storage account --> container level (dbfs-files)
 
     # autnav = autonomy / navigation secret scope variables
     scope_name_autnav = "autonomy_nav_secretscope"
     secret_name_autnav = "autonomy-nav-sas-token-dbfsfilesnav"
-    secret_value_autnav = "?si=dbfsfilesnavpolicy&spr=https&sv=2022-11-02&sr=c&sig=DyCTY1HUK2L0Bhl5JLo8K9MUWXdIPFjJu%2BcdrFiLx4c%3D" # regular storage account --> container level (dbfs-files-nav)
+    secret_value_autnav = "?si=dbf" # regular storage account --> container level (dbfs-files-nav)
 
 
 #-------------------------------------ADLS GEN 2 METHOD -------------------------------------
@@ -29,19 +29,19 @@ if method == "adlsgen2":
     # ft = flight tech secret scope variables
     scope_name_ft = "flight_tech_secretscope"
     secret_name_ft_lf = "flight-tech-sas-token-dbfsfiles-listfiles" # list files
-    secret_value_ft_lf = "?si=dbfsfileslistpolicy&spr=https&sv=2022-11-02&sr=c&sig=1PdjPvGRFUJSsMHF%2BjjjCWPSJgajxQgOaeZjQpFawPk%3D" # ADLSGEN2 storage account --> list container level (dbfs-files)
+    secret_value_ft_lf = "?si=dbfsfiles" # ADLSGEN2 storage account --> list container level (dbfs-files)
     secret_name_ft_rf_pdf = "autonomy-nav-sas-token-dbfsfilesnav-readfiles-pdfs" # read files
-    secret_value_ft_rf_pdf = "?si=dbfsfilespolicy&spr=https&sv=2022-11-02&sr=d&sig=XxvzeWdD2N5Xuwzvi91xugLPQCviI6r%2Fnh2TArzD7vo%3D&sdd=1" # ADLSGEN2 storage account --> folder level (dbfs-files-nav/pdfs)
+    secret_value_ft_rf_pdf = "?si=&spr=ht" # ADLSGEN2 storage account --> folder level (dbfs-files-nav/pdfs)
 
 
     # autnav = autonomy / navigation secret scope variables
     scope_name_autnav = "autonomy_nav_secretscope"
     secret_name_autnav_lf = "autonomy-nav-sas-token-dbfsfilesnav-listfiles"
-    secret_value_autnav_lf = "?si=dbfsfilesnavlistpolicy&spr=https&sv=2022-11-02&sr=c&sig=LkMyEg%2Fq1e09dlxJ5vyTwEW67W3XweoHAZto3AOHIkQ%3D" # ADLSGEN2 storage account --> list container level (dbfs-files-nav)
+    secret_value_autnav_lf = "?si=dbf" # ADLSGEN2 storage account --> list container level (dbfs-files-nav)
     secret_name_autnav_rf_matlab = "autonomy-nav-sas-token-dbfsfilesnav-readfiles-matlab" # read files
-    secret_value_autnav_rf_matlab = "?si=dbfsfilesnavpolicy&spr=https&sv=2022-11-02&sr=d&sig=l7Ivt%2BBqjSqT81rbUC6YgYxRkrgO8DOIOZ5zZ3apqZc%3D&sdd=1" # ADLSGEN2 storage account --> folder level (dbfs-files-nav/matlab)
+    secret_value_autnav_rf_matlab = "?si=dbfsfile # ADLSGEN2 storage account --> folder level (dbfs-files-nav/matlab)
     secret_name_autnav_rf_imgs = "autonomy-nav-sas-token-dbfsfilesnav-readfiles-imgs" # read files
-    secret_value_autnav_rf_imgs = "?si=dbfsfilesnavpolicy&spr=https&sv=2022-11-02&sr=d&sig=F%2BE0Am0T6Am2ZrxgDss5cOwkAWmI3pr%2Fzh67R%2FXT5nw%3D&sdd=1" # ADLSGEN2 storage account --> folder level (dbfs-files-nav/pdfs)
+    secret_value_autnav_rf_imgs = "?si=dbfsfi" # ADLSGEN2 storage account --> folder level (dbfs-files-nav/pdfs)
 
 # COMMAND ----------
 
